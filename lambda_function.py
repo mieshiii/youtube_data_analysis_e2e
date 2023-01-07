@@ -22,6 +22,15 @@ def lambda_handler(event, context):
     # Extract required columns:
     df_step_1 = pd.json_normalize(df_raw['items'])
 
+    #create db
+    databases = wr.catalog.databases()
+    if os_input_glue_catalog_db_name not in databases.values:
+      wr.catalog.create_database(os_input_glue_catalog_db_name)
+      
+    else:
+      print("Database already exists")
+      
+      
     # Write to S3
     wr_response = wr.s3.to_parquet(
       df=df_step_1,
